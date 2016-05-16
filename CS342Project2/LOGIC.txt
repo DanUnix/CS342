@@ -1,0 +1,18 @@
+# Author: Daniel Pulley
+
+Description of game logic
+-------------------------
+
+square.java
+-----------
+I first created a square.java class file. This class contains data on a single square object. This includes a boolean value called isMine which is set if a square in the 2D-Array grid is set to be a mine in the game.java setMines() function. I also created a string called flag. This string status is to be changed when the user right clicks the button. It goes through 3 changes: " "(blank), "M"(Mine), and "?". I also created an integer called near. This integer is intially set to 0 on program start but is later incremented when checking to see if how many mines surround it at that location. 
+
+The constructor for square.java intializes the boolean value isMine to false, sets the flag to empty string, and the integer near to 0.
+
+The function RandomBoolean is not used in the real construction of the code as it was only a means of sanity checking to make sure the boolean value is changed. Instead of RandomBoolean, in game.java there is a setMines function which sets 10 mines randomly onto the grid. 
+
+The function setFlag gets basically sets the flag of the current square when right clicked on as stated above. 
+
+game.java
+---------
+The comments in game.java explain each function more in depth

@@ -1,0 +1,267 @@
+public class HugeIntegerClass {
+	public int[] bigInt;
+
+	public HugeIntegerClass(String str) {
+		int len = str.length();
+		bigInt = new int[len];
+		for (int i = len; i > 0; i--) {
+			bigInt[i - 1] = Character.getNumericValue(str.charAt(i - 1));
+		}
+	}
+
+	public HugeIntegerClass() {
+	}
+
+	public static boolean isGreater(HugeIntegerClass x, HugeIntegerClass y) {
+		if (x.bigInt.length > y.bigInt.length)
+			return true;
+		else if (x.bigInt.length == y.bigInt.length) {
+			int i = x.bigInt.length;
+			if (x.bigInt[i - 1] > y.bigInt[i - 1]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isLess(HugeIntegerClass x, HugeIntegerClass y) {
+		if (x.bigInt.length < y.bigInt.length)
+			return true;
+		else if (x.bigInt.length == y.bigInt.length) {
+			int i = x.bigInt.length;
+			if (x.bigInt[i - 1] < y.bigInt[i - 1]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isEqual(HugeIntegerClass x, HugeIntegerClass y) {
+		if (x.bigInt.length == y.bigInt.length) {
+			int n = x.bigInt.length;
+			for (int i = 0; i < n; i++) {
+				if (x.bigInt[i] != y.bigInt[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public static HugeIntegerClass addition(HugeIntegerClass x, HugeIntegerClass y) {
+		int xSize = x.bigInt.length;
+		int ySize = y.bigInt.length;
+		HugeIntegerClass result = new HugeIntegerClass();
+		int len;
+		if (xSize > ySize) {
+			len = xSize + 1;
+			result.bigInt = new int[len];
+			int carry = 0;
+			for (int i = 0; i < ySize; i++) {
+				int val = x.bigInt[i] + y.bigInt[i] + carry;
+				carry = val / 10;
+				val = val % 10;
+				result.bigInt[i] = val;
+			}
+			for (int i = ySize; i < xSize; i++) {
+				int val = x.bigInt[i] + carry;
+				carry = val / 10;
+				val = val % 10;
+				result.bigInt[i] = val;
+				if (i == (len - 1) && carry > 0) {
+					result.bigInt[i] = result.bigInt[i] + carry;
+				}
+			}
+		} else {
+			len = ySize + 1;
+			result.bigInt = new int[len];
+			int carry = 0;
+			for (int i = 0; i < xSize; i++) {
+				int val = x.bigInt[i] + y.bigInt[i] + carry;
+				carry = val / 10;
+				val = val % 10;
+				result.bigInt[i] = val;
+			}
+			for (int i = xSize; i < ySize; i++) {
+				int val = y.bigInt[i] + carry;
+				carry = val / 10;
+				val = val % 10;
+				result.bigInt[i] = val;
+				if (i == (len - 1) && carry > 0) {
+					result.bigInt[i] = result.bigInt[i] + carry;
+				}
+			}
+		}
+		return result;
+	}
+
+	public static HugeIntegerClass subtraction(HugeIntegerClass x, HugeIntegerClass y) {
+		if (isLess(x, y)) { // Check to see that x is bigger so that subtraction
+							// does not result in a negative number
+			System.exit(-1);
+		}
+		int xSize = x.bigInt.length;
+		int ySize = y.bigInt.length;
+		HugeIntegerClass result = new HugeIntegerClass();
+		result.bigInt = new int[xSize];
+		for (int i = 0; i < ySize; i++) {
+			int val;
+			if (y.bigInt[i] != 0) {
+				if (x.bigInt[i] > y.bigInt[i]) {
+					val = x.bigInt[i] - y.bigInt[i];
+					result.bigInt[i] = val;
+				} else if (x.bigInt[i] < y.bigInt[i]) {
+					x.bigInt[i + 1] = x.bigInt[i + 1] - 1;
+					x.bigInt[i] = x.bigInt[i] + 10;
+					val = x.bigInt[i] - y.bigInt[i];
+					result.bigInt[i] = val;
+				} else {
+					result.bigInt[i] = 0;
+				}
+			}
+		}
+		for (int i = ySize; i < xSize; i++) {
+			result.bigInt[i] = x.bigInt[i];
+		}
+		return result;
+	}
+
+	public static HugeIntegerClass multiplication(HugeIntegerClass x, HugeIntegerClass y) {
+		int xSize = x.bigInt.length;
+		int ySize = y.bigInt.length;
+		HugeIntegerClass result = new HugeIntegerClass();
+		result.bigInt = new int[ySize + xSize];
+
+		for (int i = 0; i < ySize; i++) {
+			int carry = 0;
+			for (int j = 0; j < xSize; j++) {
+				result.bigInt[j + i] = result.bigInt[j + i] + carry + (x.bigInt[j] * y.bigInt[i]);
+				carry = result.bigInt[j + i] / 10;
+				result.bigInt[j + i] = result.bigInt[j + i] % 10;
+			}
+			result.bigInt[i + xSize] = result.bigInt[i + xSize] + carry;
+		}
+		return result;
+	}
+
+	public static HugeIntegerClass division(HugeIntegerClass num, HugeIntegerClass den, int flag) {
+		if (den.bigInt.length == 1 && den.bigInt[0] == 0) {
+			System.exit(-1);
+		}
+		if (isLess(num, den)) {
+			System.exit(-1);
+		}
+
+		HugeIntegerClass remainder = new HugeIntegerClass();
+		remainder.bigInt = new int[num.bigInt.length];
+		for (int i = 0; i < num.bigInt.length; i++) {
+			remainder.bigInt[i] = num.bigInt[i];
+		}
+		HugeIntegerClass quotient = new HugeIntegerClass();
+		quotient.bigInt = new int[den.bigInt.length];
+		quotient.bigInt[0] = 0;
+		HugeIntegerClass one = new HugeIntegerClass();
+		one.bigInt = new int[1];
+		one.bigInt[0] = 1;
+		System.out.println("\nTrying to Divide\n");
+		while (isEqual(remainder, den) || isGreater(remainder, den)) {
+			HugeIntegerClass tmpq = new HugeIntegerClass();
+			tmpq = addition(quotient, one);
+			quotient = tmpq;
+			for (int i = 0; i < quotient.bigInt.length; i++) {
+				System.out.print(quotient.bigInt[i]);
+			}
+			HugeIntegerClass tmpr = new HugeIntegerClass();
+			tmpr = subtraction(remainder, den);
+			remainder = tmpr;
+			for (int i = 0; i < remainder.bigInt.length; i++) {
+				System.out.print(remainder.bigInt[i]);
+			}
+			
+		}
+		if (flag == 1) {// division
+			return quotient;
+		} else {// modulus
+			return remainder;
+		}
+	}
+
+	/**
+	 * Main method to start the game
+	 */
+	public static void main(String[] args) {
+		String str1 = "654654654616516848189798419516516848";
+		String str2 = "11111";
+		String str3 = "79876154313549";
+		String str4 = "87898";
+		String str5 = "9999";
+
+		HugeIntegerClass hic1 = new HugeIntegerClass(str1);
+		HugeIntegerClass hic2 = new HugeIntegerClass(str2);
+		HugeIntegerClass hic3 = new HugeIntegerClass(str3);
+		HugeIntegerClass hic4 = new HugeIntegerClass(str4);
+		HugeIntegerClass hic5 = new HugeIntegerClass(str5);
+		System.out.println("Printed in Reverse");
+		System.out.print("\nFirst Big Int: ");
+		for (int i = 0; i < hic1.bigInt.length; i++) {
+			System.out.print(hic1.bigInt[i]);
+		}
+
+		System.out.print("\nSecond Big Int: ");
+		for (int i = 0; i < hic2.bigInt.length; i++) {
+			System.out.print(hic2.bigInt[i]);
+		}
+
+		System.out.print("\nThird Big Int: ");
+		for (int i = 0; i < hic3.bigInt.length; i++) {
+			System.out.print(hic3.bigInt[i]);
+		}
+
+		System.out.print("\nFourth Big Int: ");
+		for (int i = 0; i < hic4.bigInt.length; i++) {
+			System.out.print(hic4.bigInt[i]);
+		}
+
+		System.out.print("\nFifth Big Int: ");
+		for (int i = 0; i < hic5.bigInt.length; i++) {
+			System.out.print(hic5.bigInt[i]);
+		}
+
+		HugeIntegerClass subHics = subtraction(hic2, hic5);
+
+		System.out.print("\nSubtracted: ");
+		for (int i = 0; i < subHics.bigInt.length; i++) {
+			System.out.print(subHics.bigInt[i]);
+		}
+
+		HugeIntegerClass addedHics = addition(hic2, hic5);
+
+		System.out.print("\nAdded: ");
+		for (int i = 0; i < addedHics.bigInt.length; i++) {
+			System.out.print(addedHics.bigInt[i]);
+		}
+
+		HugeIntegerClass multHics = multiplication(hic2, hic5);
+
+		System.out.print("\nMultiplied: ");
+		for (int i = 0; i < multHics.bigInt.length; i++) {
+			System.out.print(multHics.bigInt[i]);
+		}
+
+		HugeIntegerClass divHics = division(hic2, hic5, 1);
+
+		System.out.print("\nDivided: ");
+		for (int i = 0; i < divHics.bigInt.length; i++) {
+			System.out.print(divHics.bigInt[i]);
+		}
+
+		HugeIntegerClass modHics = division(hic2, hic5, 0);
+
+		System.out.print("\nModulus: ");
+		for (int i = 0; i < modHics.bigInt.length; i++) {
+			System.out.print(modHics.bigInt[i]);
+		}
+
+	}// end of main
+}
